@@ -1,0 +1,14 @@
+* {
+  font-family: "Roboto", sans-serif !important;
+}
+label {
+  font-size: 13px;
+  font-weight: bold;
+}
+.form-control:focus {
+  outline: none !important;
+  border: none !important;
+}
+input {
+  font-size: 14px;
+}
