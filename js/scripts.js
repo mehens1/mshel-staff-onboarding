@@ -1,63 +1,5 @@
-
 // Retrieve user_token
 const user_token = localStorage.getItem("user_token");
-
-if(!user_token){
-  window.location.href = "index.html";
-}
-
-// A $( document ).ready() block.
-$( document ).ready(function() {
-  // console.log( "ready!" );
-
-  // get full staff data
-  loadBioData();
-
-
-
-
-
-
-  $('#logoutBtn').click(function() {
-
-    // Remove the username from localStorage
-    localStorage.removeItem("user_token");
-    window.location.href = "signin.html";                
-  });
-});
-
-function loadBioData(){
-
-  var myHeaders = new Headers();
-  myHeaders.append("Accept", "application/json");
-  myHeaders.append("token", `${user_token}`);
-        
-  var requestOptions = {
-      method: 'GET',
-      headers: myHeaders,
-      redirect: 'follow'
-  };
-
-  fetch(`https://hr.mshelhomes.com/accounts/public/Staff/getMyProile`, requestOptions)
-    .then(response => response.json())
-    .then(result => {
-
-      var data = result.data;
-
-      if(data.length === 0){
-
-        swal("Info!", "Data is completely empty, kindly update your profile data!", "info");
-        return;
-
-      }
-      
-      console.log("result");
-      console.log(data.length);
-
-    })
-    .catch(error => console.log('error: ', error));
-
-}
 
 // Get the form elements
 const bioForm = document.querySelector("#bio-form");
@@ -65,6 +7,57 @@ const bankForm = document.querySelector("#bank-form");
 const nextOfKinForm = document.querySelector("#next-of-kin-form");
 const educationForm = document.querySelector("#education-form");
 const healthForm = document.querySelector("#health-form");
+
+if (!user_token) {
+  window.location.href = "index.html";
+}
+
+// A $( document ).ready() block.
+$(document).ready(function () {
+  // console.log( "ready!" );
+
+  // get full staff data
+  loadBioData();
+
+  $("#logoutBtn").click(function () {
+    // Remove the username from localStorage
+    localStorage.removeItem("user_token");
+    window.location.href = "index.html";
+  });
+});
+
+function loadBioData() {
+  var myHeaders = new Headers();
+  myHeaders.append("Accept", "application/json");
+  myHeaders.append("token", `${user_token}`);
+
+  var requestOptions = {
+    method: "GET",
+    headers: myHeaders,
+    redirect: "follow",
+  };
+
+  fetch(
+    `https://hr.mshelhomes.com/accounts/public/Staff/getMyProile`,
+    requestOptions
+  )
+    .then((response) => response.json())
+    .then((result) => {
+      var data = result.data;
+
+      if (data.length === 0) {
+        swal(
+          "Info!",
+          "Data is completely empty, kindly update your profile data!",
+          "info"
+        );
+        return;
+      }
+
+      console.log(data);
+    })
+    .catch((error) => console.log("error: ", error));
+}
 
 // Add event listeners for form submissions
 bioForm.addEventListener("submit", function (event) {
@@ -86,48 +79,48 @@ bioForm.addEventListener("submit", function (event) {
   var permanentAddress = $("textarea[name='permanentAddress']").val();
   var nsitf = $("input[name='nsitf']").val();
 
-  if(!surName){
-    swal("Error!", "Surname is required!", "error")
+  if (!surName) {
+    swal("Error!", "Surname is required!", "error");
     return;
   }
-  if(!firstName){
-    swal("Error!", "Firstname is required!", "error")
+  if (!firstName) {
+    swal("Error!", "Firstname is required!", "error");
     return;
   }
-  if(!gender){
-    swal("Error!", "Gender is required!", "error")
+  if (!gender) {
+    swal("Error!", "Gender is required!", "error");
     return;
   }
-  if(!stateOfOrigin){
-    swal("Error!", "State of Origin is required!", "error")
+  if (!stateOfOrigin) {
+    swal("Error!", "State of Origin is required!", "error");
     return;
   }
-  if(!religion){
-    swal("Error!", "Religion is required!", "error")
+  if (!religion) {
+    swal("Error!", "Religion is required!", "error");
     return;
   }
-  if(!nationality){
-    swal("Error!", "Nationality is required!", "error")
+  if (!nationality) {
+    swal("Error!", "Nationality is required!", "error");
     return;
   }
-  if(!dob){
-    swal("Error!", "Date of Birth is required!", "error")
+  if (!dob) {
+    swal("Error!", "Date of Birth is required!", "error");
     return;
   }
-  if(!phone){
-    swal("Error!", "Phone Number is required!", "error")
+  if (!phone) {
+    swal("Error!", "Phone Number is required!", "error");
     return;
   }
-  if(!email){
-    swal("Error!", "Email address is required!", "error")
+  if (!email) {
+    swal("Error!", "Email address is required!", "error");
     return;
   }
-  if(!residentialAddress){
-    swal("Error!", "Residential Address is required!", "error")
+  if (!residentialAddress) {
+    swal("Error!", "Residential Address is required!", "error");
     return;
   }
-  if(!permanentAddress){
-    swal("Error!", "Permanent Address is required!", "error")
+  if (!permanentAddress) {
+    swal("Error!", "Permanent Address is required!", "error");
     return;
   }
 
@@ -137,61 +130,50 @@ bioForm.addEventListener("submit", function (event) {
     icon: "info",
     closeOnClickOutside: false,
     closeOnEsc: false,
-    button: false
+    button: false,
   });
 
-  var form = new FormData();
-  form.append("surname", surName);
-  form.append("firstName", firstName);
-  form.append("otherNames", otherNames);
-  form.append("gender", gender);
-  form.append("state", stateOfOrigin);
-  form.append("religion", religion);
-  form.append("nationality", nationality);
-  form.append("dob", dob);
-  form.append("phone", phone);
-  form.append("email", email);
-  form.append("nsitf", nsitf);
-  form.append("maritalStatus", maritalStatus);
-  form.append("residentialAddress", residentialAddress);
-  form.append("permanentAddress", permanentAddress);
+  var data = {
+    surname: surName,
+    firstName: firstName,
+    otherNames: otherNames,
+    gender: gender,
+    state: stateOfOrigin,
+    religion: religion,
+    nationality: nationality,
+    dob: dob,
+    phone: phone,
+    email: email,
+    nsitf: nsitf,
+    maritalStatus: maritalStatus,
+    residentialAddress: residentialAddress,
+    permanentAddress: permanentAddress,
+  };
 
   var myHeaders = new Headers();
   myHeaders.append("Accept", "application/json");
+  myHeaders.append("Content-Type", "application/json");
   myHeaders.append("token", `${user_token}`);
 
   var settings = {
-    "url": "https://hr.mshelhomes.com/accounts/public/Staff/saveMyProfile",
-    "method": "POST",
-    "headers": myHeaders,
-    "timeout": 0,
-    "processData": false,
-    "mimeType": "multipart/form-data",
-    "contentType": false,
-    "data": form
+    url: "https://hr.mshelhomes.com/accounts/public/Staff/saveMyProfile",
+    method: "POST",
+    headers: myHeaders,
+    body: JSON.stringify(data), // Convert data object to JSON string
+    crossDomain: true, // Use the crossDomain property to enable CORS
   };
 
-  $.ajax(settings)
-  .done(function (response) {
-    var res = JSON.parse(response);
-    swal("info", "Done", "info");
-    console.log(res);
-  })
-  .fail(function (jqXHR, textStatus, errorThrown) {
-    console.error("Request failed:", textStatus, errorThrown);
-    // You can handle errors here, e.g., show an error message to the user.
-  });
+  fetch(settings.url, settings)
+    .then((response) => response.json()) // Parse JSON response
+    .then((data) => {
+      swal("info", data.message, "info");
+    })
+    .catch((error) => {
+      console.error("Request failed:", error);
+      // You can handle errors here, e.g., show an error message to the user.
+    });
 
-
-  // $.ajax(settings).done(function (response) {
-  //   var res = JSON.parse(response);
-
-  //   swal("info", "Done", "info");
-  //   // swal("info", res, "info");
-  //   console.log(res);
-  // });
-
-  return
+  return;
 
   $("#nav-bioData-tab").removeClass("active");
   $("#nav-bioData").removeClass("show active");
