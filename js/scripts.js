@@ -299,7 +299,7 @@ nextOfKinForm.addEventListener("submit", function (event) {
   // You can send the form data to the server using fetch or XMLHttpRequest
 });
 
-educationForm.addEventListener("submit", function (event) {
+educationForm.addEventListener("submit", async function (event) {
   event.preventDefault(); // Prevent form from submitting normally
 
   // Get and set variables to be submitted
@@ -347,31 +347,73 @@ educationForm.addEventListener("submit", function (event) {
   });
 
   // upload certificate now
-  uploadFile(certificate);
+  // var certificateUpload = uploadFile(certificate, "Certificate");
+  const certificateData = await uploadFile(certificate, "Certificate");
 
-  return;
+  if(!certificateData.success){
 
-  //
-  //
-  //
-  //
+    swal({
+      title: "Error!",
+      text: "Something went wrong uploading Certificate...",
+      icon: "error",
+      closeOnClickOutside: false,
+      closeOnEsc: false,
+      button: true,
+    });
+    return;
 
-  var data = {
+  }
+
+  const uploadedCertificate = certificateData.data;
+
+  const cvData = await uploadFile(cv, "CV");
+
+  if(!cvData.success){
+
+    swal({
+      title: "Error!",
+      text: "Something went wrong uploading CV...",
+      icon: "error",
+      closeOnClickOutside: false,
+      closeOnEsc: false,
+      button: true,
+    });
+    return;
+
+  }
+  const uploadedCV = cvData.data;
+
+  swal({
+    title: "Processing",
+    text: "Submitting Data...",
+    icon: "info",
+    closeOnClickOutside: false,
+    closeOnEsc: false,
+    button: false,
+  });
+
+  var educationData = {
     level: level,
-    certificate: certificate,
-    cv: cv,
+    certificate: uploadedCertificate,
+    cv: uploadedCV,
   };
+
+  var eduFormData = new FormData();
+  eduFormData.append("level", level);
+  eduFormData.append("certificate", uploadedCertificate);
+  eduFormData.append("cv", uploadedCV);
 
   var myHeaders = new Headers();
   myHeaders.append("Accept", "application/json");
-  myHeaders.append("Content-Type", "multipart/form-data");
+  myHeaders.append("Content-Type", "application/json");
+  // myHeaders.append("Content-Type", "multipart/form-data");
   myHeaders.append("token", `${user_token}`);
 
   var settings = {
     url: "https://hr.mshelhomes.com/accounts/public/Staff/saveEductation",
     method: "POST",
     headers: myHeaders,
-    body: JSON.stringify(data), // Convert data object to JSON string
+    body: JSON.stringify(educationData), // Convert data object to JSON string
     crossDomain: true, // Use the crossDomain property to enable CORS
   };
 
@@ -380,7 +422,6 @@ educationForm.addEventListener("submit", function (event) {
     .then((data) => {
       if (data.success) {
         swal("info", data.message, "info");
-        console.log(data);
 
         // Handle education form submission here
         $("#nav-educationBackground-tab").removeClass("active");
@@ -504,54 +545,44 @@ healthForm.addEventListener("submit", function (event) {
   // You can send the form data to the server using fetch or XMLHttpRequest
 });
 
-function uploadFile(file) {
-  swal({
-    title: "Processing",
-    text: "Uploading Document...",
-    icon: "info",
-    closeOnClickOutside: false,
-    closeOnEsc: false,
-    button: false,
-  });
-
-  var formData = new FormData();
-  formData.append("file", file);
-
-  var myHeaders = new Headers();
-  myHeaders.append("Accept", "application/json");
-  myHeaders.append("token", `${user_token}`);
-
-  var settings = {
-    url: "https://hr.mshelhomes.com/accounts/public/Staff/uploadDocumentStaff",
-    method: "POST",
-    headers: myHeaders,
-    body: formData,
-    crossDomain: true, // Use the crossDomain property to enable CORS
-  };
-
-  fetch(settings.url, settings)
-    .then((response) => response.json()) // Parse JSON response
-    .then((data) => {
-      console.log("data anan");
-      console.log(data);
-
-      swal({
-        title: "Success",
-        text: "Successful...",
-        icon: "success",
-        button: true,
-      });
-
-      if (data.success) {
-        console.log(data.message);
-      } else {
-        swal("info", data.message, "info");
-      }
-    })
-    .catch((error) => {
-      console.error("Request failed:", error);
-      // You can handle errors here, e.g., show an error message to the user.
+function uploadFile(file, title) {
+  return new Promise((resolve, reject) => {
+    swal({
+      title: "Processing",
+      text: `Uploading ${title}...`,
+      icon: "info",
+      closeOnClickOutside: false,
+      closeOnEsc: false,
+      button: false
     });
+
+    var formData = new FormData();
+    formData.append("file", file);
+
+    var myHeaders = new Headers();
+    myHeaders.append("Accept", "application/json");
+    myHeaders.append("token", `${user_token}`);
+
+    var settings = {
+      url: "https://hr.mshelhomes.com/accounts/public/Staff/uploadDocumentStaff",
+      method: "POST",
+      headers: myHeaders,
+      body: formData,
+      crossDomain: true, // Use the crossDomain property to enable CORS
+    };
+
+    fetch(settings.url, settings)
+      .then((response) => response.json())
+      .then((data) => {
+        // Resolve the Promise with the data
+        resolve(data);
+      })
+      .catch((error) => {
+        console.error("Request failed:", error);
+        // Reject the Promise with the error
+        reject(error);
+      });
+  });
 }
 
 function loadAll() {
@@ -559,6 +590,7 @@ function loadAll() {
   loadBioData();
   loadBankData();
   loadNOKData();
+  loadEducationData();
   loadHealthData();
 }
 
@@ -664,6 +696,35 @@ function loadNOKData() {
         $("#preview_nok_phone").text(data[0].phone);
         $("#preview_nok_relationship").text(data[0].relationship);
         $("#preview_nok_address").text(data[0].residentialAddress);
+      }
+    })
+    .catch((error) => console.log("error: ", error));
+}
+
+// load all nok data
+function loadEducationData() {
+  var myHeaders = new Headers();
+  myHeaders.append("Accept", "application/json");
+  myHeaders.append("token", `${user_token}`);
+
+  var requestOptions = {
+    method: "GET",
+    headers: myHeaders,
+    redirect: "follow",
+  };
+
+  fetch(
+    `https://hr.mshelhomes.com/accounts/public/Staff/getEducation`,
+    requestOptions
+  )
+    .then((response) => response.json())
+    .then((result) => {
+      var data = result.data;
+
+      if (data.length > 0) {
+        $("#preview_qualification").text(data[0].highestLevel);
+        $("#preview_certificate").text(data[0].professionalCertificate);
+        $("#preview_CV").text(data[0].cv);
       }
     })
     .catch((error) => console.log("error: ", error));
