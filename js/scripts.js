@@ -132,20 +132,16 @@ bioForm.addEventListener("submit", function (event) {
   fetch(settings.url, settings)
     .then((response) => response.json()) // Parse JSON response
     .then((data) => {
-
-      if(data.success){
-
+      if (data.success) {
         swal("info", data.message, "info");
         $("#nav-bioData-tab").removeClass("active");
         $("#nav-bioData").removeClass("show active");
 
         $("#nav-bankDetails-tab").addClass("active");
         $("#nav-bankDetails").addClass("show active");
-
-      }else{
+      } else {
         swal("info", data.message, "info");
       }
-      
     })
     .catch((error) => {
       console.error("Request failed:", error);
@@ -161,7 +157,6 @@ bankForm.addEventListener("submit", function (event) {
   var accountNumber = $("input[name='number']").val();
   var accountName = $("input[name='name']").val();
 
-  
   if (!accountName) {
     swal("Error!", "Account Name is required!", "error");
     return;
@@ -206,39 +201,34 @@ bankForm.addEventListener("submit", function (event) {
   fetch(settings.url, settings)
     .then((response) => response.json()) // Parse JSON response
     .then((data) => {
-
-      if(data.success){
-
+      if (data.success) {
         swal("info", data.message, "info");
         $("#nav-bankDetails-tab").removeClass("active");
         $("#nav-bankDetails").removeClass("show active");
 
         $("#nav-nextOfKin-tab").addClass("active");
         $("#nav-nextOfKin").addClass("show active");
-        
-      }else{
+      } else {
         swal("info", data.message, "info");
       }
-      
     })
     .catch((error) => {
       console.error("Request failed:", error);
       // You can handle errors here, e.g., show an error message to the user.
     });
 
-  
   // You can send the form data to the server using fetch or XMLHttpRequest
 });
 
 nextOfKinForm.addEventListener("submit", function (event) {
   event.preventDefault();
-  
+
   var nok_name = $("input[name='nok_name']").val();
   var nok_email = $("input[name='nok_email']").val();
   var nok_phone = $("input[name='nok_phone']").val();
   var nok_relationship = $("input[name='nok_relationship']").val();
   var nok_address = $("textarea[name='nok_address']").val();
-  
+
   if (!nok_name) {
     swal("Error!", "Next of Kin Name is required!", "error");
     return;
@@ -289,9 +279,7 @@ nextOfKinForm.addEventListener("submit", function (event) {
   fetch(settings.url, settings)
     .then((response) => response.json()) // Parse JSON response
     .then((data) => {
-
-      if(data.success){
-
+      if (data.success) {
         swal("info", data.message, "info");
         // Handle next of kin form submission here
         $("#nav-nextOfKin-tab").removeClass("active");
@@ -299,11 +287,9 @@ nextOfKinForm.addEventListener("submit", function (event) {
 
         $("#nav-educationBackground-tab").addClass("active");
         $("#nav-educationBackground").addClass("show active");
-        
-      }else{
+      } else {
         swal("info", data.message, "info");
       }
-      
     })
     .catch((error) => {
       console.error("Request failed:", error);
@@ -314,39 +300,43 @@ nextOfKinForm.addEventListener("submit", function (event) {
 });
 
 educationForm.addEventListener("submit", function (event) {
-  event.preventDefault();
+  event.preventDefault(); // Prevent form from submitting normally
 
+  // Get and set variables to be submitted
   var level = $("input[name='level']").val();
-  // var certificate = $('#certificate')[0].files[0];
-  var certificate = $('#certificate')[0];
-  var cv = $('#cv')[0].files[0];
+  var certificate = document.getElementById("certificate").files[0];
+  var cv = document.getElementById("cv").files[0];
 
-  
+  // Get file types
+  var certificateFileType = $("#certificate")[0].files[0].type;
+  var cvFileType = $("#cv")[0].files[0].type;
+
+  // Validation checks
   if (!level) {
     swal("Error!", "Level of Education is required!", "error");
     return;
   }
+
   if (!certificate) {
     swal("Error!", "Certificate is required!", "error");
     return;
   }
+  
   if (!cv) {
     swal("Error!", "CV is required!", "error");
     return;
   }
 
-  var certificateFileType = $('#certificate')[0].files[0].type;
-  var cvFileType = $('#cv')[0].files[0].type;
-
-  if(certificateFileType !== "application/pdf"){
+  if (certificateFileType !== "application/pdf") {
     swal("Error!", "Certificate File type must be PDF!", "error");
     return;
   }
-  if(cvFileType !== "application/pdf"){
+  
+  if (cvFileType !== "application/pdf") {
     swal("Error!", "CV File type must be PDF!", "error");
     return;
   }
-  
+
   swal({
     title: "Processing",
     text: "Submitting Data...",
@@ -355,17 +345,11 @@ educationForm.addEventListener("submit", function (event) {
     closeOnEsc: false,
     button: false,
   });
-  
-  
 
   // upload certificate now
   uploadFile(certificate);
 
-  
-
   return;
-
-
 
   //
   //
@@ -377,11 +361,10 @@ educationForm.addEventListener("submit", function (event) {
     certificate: certificate,
     cv: cv,
   };
-  
-  
+
   var myHeaders = new Headers();
   myHeaders.append("Accept", "application/json");
-  myHeaders.append("Content-Type", "application/json");
+  myHeaders.append("Content-Type", "multipart/form-data");
   myHeaders.append("token", `${user_token}`);
 
   var settings = {
@@ -395,9 +378,7 @@ educationForm.addEventListener("submit", function (event) {
   fetch(settings.url, settings)
     .then((response) => response.json()) // Parse JSON response
     .then((data) => {
-
-      if(data.success){
-
+      if (data.success) {
         swal("info", data.message, "info");
         console.log(data);
 
@@ -407,17 +388,15 @@ educationForm.addEventListener("submit", function (event) {
 
         $("#nav-healthStatus-tab").addClass("active");
         $("#nav-healthStatus").addClass("show active");
-        
-      }else{
+      } else {
         swal("info", data.message, "info");
       }
-      
     })
     .catch((error) => {
       console.error("Request failed:", error);
       // You can handle errors here, e.g., show an error message to the user.
     });
-  
+
   // You can send the form data to the server using fetch or XMLHttpRequest
 });
 
@@ -427,12 +406,12 @@ healthForm.addEventListener("submit", function (event) {
   var hospital = $("input[name='hospital']").val();
   var date = $("input[name='dateOfTest']").val();
   var bloodGroup = $("input[name='bloodGroup']").val();
-  var genotype  = $("input[name='genotype']").val();
+  var genotype = $("input[name='genotype']").val();
   var hiv = $("select[name='hiv']").val();
   var kidney = $("input[name='kidney']").val();
   var tuberculosis = $("input[name='tuberculosis']").val();
   var covidTest = $("input[name='covidTest']").val();
-  
+
   if (!hospital) {
     swal("Error!", "Hospital of Test is required!", "error");
     return;
@@ -465,7 +444,7 @@ healthForm.addEventListener("submit", function (event) {
     swal("Error!", "Covid Status is required!", "error");
     return;
   }
-  
+
   swal({
     title: "Processing",
     text: "Submitting Data...",
@@ -474,7 +453,7 @@ healthForm.addEventListener("submit", function (event) {
     closeOnEsc: false,
     button: false,
   });
-  
+
   var data = {
     hospital: hospital,
     date: date,
@@ -485,7 +464,7 @@ healthForm.addEventListener("submit", function (event) {
     tuberculosis: tuberculosis,
     covidTest: covidTest,
   };
-    
+
   var myHeaders = new Headers();
   myHeaders.append("Accept", "application/json");
   myHeaders.append("Content-Type", "application/json");
@@ -502,11 +481,9 @@ healthForm.addEventListener("submit", function (event) {
   fetch(settings.url, settings)
     .then((response) => response.json()) // Parse JSON response
     .then((data) => {
-
       console.log(data);
 
-      if(data.success){
-
+      if (data.success) {
         swal("info", data.message, "info");
 
         // Handle health status form submission here
@@ -515,11 +492,9 @@ healthForm.addEventListener("submit", function (event) {
 
         $("#nav-profile-tab").addClass("active");
         $("#nav-profile").addClass("show active");
-        
-      }else{
+      } else {
         swal("info", data.message, "info");
       }
-      
     })
     .catch((error) => {
       console.error("Request failed:", error);
@@ -530,10 +505,6 @@ healthForm.addEventListener("submit", function (event) {
 });
 
 function uploadFile(file) {
-
-  // console.log(file);
-  // return;
-
   swal({
     title: "Processing",
     text: "Uploading Document...",
@@ -548,21 +519,19 @@ function uploadFile(file) {
 
   var myHeaders = new Headers();
   myHeaders.append("Accept", "application/json");
-  myHeaders.append("Content-Type", "application/json");
   myHeaders.append("token", `${user_token}`);
 
   var settings = {
     url: "https://hr.mshelhomes.com/accounts/public/Staff/uploadDocumentStaff",
     method: "POST",
     headers: myHeaders,
-    body: formData, 
+    body: formData,
     crossDomain: true, // Use the crossDomain property to enable CORS
   };
 
   fetch(settings.url, settings)
     .then((response) => response.json()) // Parse JSON response
     .then((data) => {
-
       console.log("data anan");
       console.log(data);
 
@@ -573,23 +542,16 @@ function uploadFile(file) {
         button: true,
       });
 
-      if(data.success){
-
-        console.log(data.message)
-        
-      }else{
+      if (data.success) {
+        console.log(data.message);
+      } else {
         swal("info", data.message, "info");
       }
-
-      
-      
     })
     .catch((error) => {
       console.error("Request failed:", error);
       // You can handle errors here, e.g., show an error message to the user.
     });
-  
-  
 }
 
 function loadAll() {
@@ -598,9 +560,7 @@ function loadAll() {
   loadBankData();
   loadNOKData();
   loadHealthData();
-  
 }
-
 
 // load all data
 function loadBioData() {
@@ -623,23 +583,28 @@ function loadBioData() {
       var data = result.data;
 
       if (data.length > 0) {
-        $('#preview_fullName').text(data[0].surname + " " + data[0].firstName + " " + data[0].otherNames);
-        $('#preview_gender').text(data[0].gender);
-        $('#preview_state_of_origin').text(data[0].state);
-        $('#preview_religion').text(data[0].religion);
-        $('#preview_nationality').text(data[0].nationality);
+        $("#preview_fullName").text(
+          data[0].surname + " " + data[0].firstName + " " + data[0].otherNames
+        );
+        $("#preview_gender").text(data[0].gender);
+        $("#preview_state_of_origin").text(data[0].state);
+        $("#preview_religion").text(data[0].religion);
+        $("#preview_nationality").text(data[0].nationality);
 
         var date = new Date(data[0].DOB);
-        var formattedDate = date.toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+        var formattedDate = date.toLocaleString("en-US", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        });
 
-        $('#preview_dob').text(formattedDate);
-        $('#preview_phone').text(data[0].phone);
-        $('#preview_email').text(data[0].email);
-        $('#preview_marital_status').text(data[0].maritalStatus);
-        $('#preview_residential_address').text(data[0].residentialAddress);
-        $('#preview_permanent_address').text(data[0].permanentAddress);
+        $("#preview_dob").text(formattedDate);
+        $("#preview_phone").text(data[0].phone);
+        $("#preview_email").text(data[0].email);
+        $("#preview_marital_status").text(data[0].maritalStatus);
+        $("#preview_residential_address").text(data[0].residentialAddress);
+        $("#preview_permanent_address").text(data[0].permanentAddress);
       }
-
     })
     .catch((error) => console.log("error: ", error));
 }
@@ -665,11 +630,10 @@ function loadBankData() {
       var data = result.data;
 
       if (data.length > 0) {
-        $('#preview_bank_name').text(data[0].bank);
-        $('#preview_account_number').text(data[0].accountnumber);
-        $('#preview_account_name').text(data[0].accountName);
+        $("#preview_bank_name").text(data[0].bank);
+        $("#preview_account_number").text(data[0].accountnumber);
+        $("#preview_account_name").text(data[0].accountName);
       }
-
     })
     .catch((error) => console.log("error: ", error));
 }
@@ -695,13 +659,12 @@ function loadNOKData() {
       var data = result.data;
 
       if (data.length > 0) {
-        $('#preview_nok_name').text(data[0].name);
-        $('#preview_nok_email').text(data[0].email);
-        $('#preview_nok_phone').text(data[0].phone);
-        $('#preview_nok_relationship').text(data[0].relationship);
-        $('#preview_nok_address').text(data[0].residentialAddress);
+        $("#preview_nok_name").text(data[0].name);
+        $("#preview_nok_email").text(data[0].email);
+        $("#preview_nok_phone").text(data[0].phone);
+        $("#preview_nok_relationship").text(data[0].relationship);
+        $("#preview_nok_address").text(data[0].residentialAddress);
       }
-
     })
     .catch((error) => console.log("error: ", error));
 }
@@ -727,20 +690,23 @@ function loadHealthData() {
       var data = result.data;
 
       if (data.length > 0) {
-        $('#preview_hospital').text(data[0].hospitalName);
+        $("#preview_hospital").text(data[0].hospitalName);
 
         var dateOfTest = new Date(data[0].testDate);
-        var readDate = dateOfTest.toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-        
-        $('#preview_date_of_birth').text(readDate);
-        $('#preview_blood_group').text(data[0].bloodGroup);
-        $('#preview_genotype').text(data[0].genotype);
-        $('#preview_hiv').text(data[0].hivstatus);
-        $('#preview_tuberculosis').text(data[0].tuberculosis);
-        $('#preview_kidney').text(data[0].kidneyFunction);
-        $('#preview_covid').text(data[0].covidTest);
-      }
+        var readDate = dateOfTest.toLocaleString("en-US", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        });
 
+        $("#preview_date_of_birth").text(readDate);
+        $("#preview_blood_group").text(data[0].bloodGroup);
+        $("#preview_genotype").text(data[0].genotype);
+        $("#preview_hiv").text(data[0].hivstatus);
+        $("#preview_tuberculosis").text(data[0].tuberculosis);
+        $("#preview_kidney").text(data[0].kidneyFunction);
+        $("#preview_covid").text(data[0].covidTest);
+      }
     })
     .catch((error) => console.log("error: ", error));
 }
